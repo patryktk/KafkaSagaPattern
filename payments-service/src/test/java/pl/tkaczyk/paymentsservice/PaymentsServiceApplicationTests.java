@@ -1,0 +1,15 @@
+package pl.tkaczyk.paymentsservice;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+
+@Import(TestcontainersConfiguration.class)
+@SpringBootTest
+class PaymentsServiceApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
