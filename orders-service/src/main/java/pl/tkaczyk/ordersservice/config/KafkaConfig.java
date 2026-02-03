@@ -30,4 +30,20 @@ public class KafkaConfig {
                 .build();
     }
 
+    @Bean
+    NewTopic createProductsCommandsTopic() {
+        return TopicBuilder.name(environment.getProperty("products.commands.topic.name"))
+                .partitions(TOPIC_PARTITIONS)
+                .replicas(TOPIC_REPLICATION_FACTOR)
+                .build();
+    }
+
+    @Bean
+    NewTopic createPaymentsCommandsTopic() {
+        return TopicBuilder.name(environment.getProperty("payments.commands.topic.name"))
+                .partitions(TOPIC_PARTITIONS)
+                .replicas(TOPIC_REPLICATION_FACTOR)
+                .build();
+    }
+
 }

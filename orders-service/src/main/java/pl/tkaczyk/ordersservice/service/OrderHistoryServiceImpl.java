@@ -1,11 +1,11 @@
 package pl.tkaczyk.ordersservice.service;
 
-import com.appsdeveloperblog.core.types.OrderStatus;
-import com.appsdeveloperblog.orders.dao.jpa.entity.OrderHistoryEntity;
-import com.appsdeveloperblog.orders.dao.jpa.repository.OrderHistoryRepository;
-import com.appsdeveloperblog.orders.dto.OrderHistory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import pl.tkaczyk.core.types.OrderStatus;
+import pl.tkaczyk.ordersservice.dto.OrderHistory;
+import pl.tkaczyk.ordersservice.jpa.entity.OrderHistoryEntity;
+import pl.tkaczyk.ordersservice.jpa.repository.OrderHistoryRepository;
 
 import java.sql.Timestamp;
 import java.util.Date;
