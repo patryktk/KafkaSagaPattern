@@ -7,13 +7,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import pl.tkaczyk.core.dto.commands.ApproveOrderCommand;
-import pl.tkaczyk.core.dto.commands.ProcessedPaymentCommand;
-import pl.tkaczyk.core.dto.commands.ReserveProductCommand;
-import pl.tkaczyk.core.dto.events.OrderApprovedEvent;
-import pl.tkaczyk.core.dto.events.OrderCreatedEvent;
-import pl.tkaczyk.core.dto.events.PaymentProcessedEvent;
-import pl.tkaczyk.core.dto.events.ProductReservedEvent;
+import pl.tkaczyk.core.dto.commands.*;
+import pl.tkaczyk.core.dto.events.*;
 import pl.tkaczyk.core.types.OrderStatus;
 import pl.tkaczyk.ordersservice.service.OrderHistoryService;
 
@@ -62,5 +57,21 @@ public class OrderSaga {
     @KafkaHandler
     public void handleEvent(@Payload OrderApprovedEvent event) {
         orderHistoryService.add(event.getOrderId(), OrderStatus.APPROVED);
+    }
+
+    @KafkaHandler
+    public void handleEvent(@Payload PaymentFailedEvent event) {
+        CancelProductReservationCommand cancelProductReservationCommand = new CancelProductReservationCommand(
+                event.getOrderId(),
+                event.getProductId(),
+                event.getProductQuantity());
+        kafkaTemplate.send(environment.getProperty("products.commands.topic.name"), cancelProductReservationCommand);
+    }
+
+    @KafkaHandler
+    public void handleEvent(@Payload ProductReservationCancelledEvent event) {
+        RejectOrderCommand rejectOrderCommand = new RejectOrderCommand(event.getOrderId());
+        kafkaTemplate.send(environment.getProperty("orders.commands.topic.name"), rejectOrderCommand);
+        orderHistoryService.add(event.getOrderId(), OrderStatus.REJECTED);
     }
 }
