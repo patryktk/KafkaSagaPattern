@@ -7,9 +7,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import pl.tkaczyk.core.commands.ProcessedPaymentCommand;
-import pl.tkaczyk.core.commands.ReserveProductCommand;
+import pl.tkaczyk.core.dto.commands.ApproveOrderCommand;
+import pl.tkaczyk.core.dto.commands.ProcessedPaymentCommand;
+import pl.tkaczyk.core.dto.commands.ReserveProductCommand;
+import pl.tkaczyk.core.dto.events.OrderApprovedEvent;
 import pl.tkaczyk.core.dto.events.OrderCreatedEvent;
+import pl.tkaczyk.core.dto.events.PaymentProcessedEvent;
 import pl.tkaczyk.core.dto.events.ProductReservedEvent;
 import pl.tkaczyk.core.types.OrderStatus;
 import pl.tkaczyk.ordersservice.service.OrderHistoryService;
@@ -17,7 +20,8 @@ import pl.tkaczyk.ordersservice.service.OrderHistoryService;
 @Component
 @KafkaListener(topics = {
         "${orders.events.topic.name}",
-        "${products.events.topic.name}"
+        "${products.events.topic.name}",
+        "${payments.events.topic.name}"
 })
 @RequiredArgsConstructor
 public class OrderSaga {
@@ -47,5 +51,16 @@ public class OrderSaga {
                 event.getProductQuantity()
         );
         kafkaTemplate.send(environment.getProperty("payments.commands.topic.name"), processedPaymentCommand);
+    }
+
+    @KafkaHandler
+    public void handleEvent(@Payload PaymentProcessedEvent event) {
+        ApproveOrderCommand approveOrderCommand = new ApproveOrderCommand(event.getOrderId());
+        kafkaTemplate.send(environment.getProperty("orders.commands.topic.name"), approveOrderCommand);
+    }
+
+    @KafkaHandler
+    public void handleEvent(@Payload OrderApprovedEvent event) {
+        orderHistoryService.add(event.getOrderId(), OrderStatus.APPROVED);
     }
 }

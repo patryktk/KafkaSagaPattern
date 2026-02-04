@@ -46,4 +46,12 @@ public class KafkaConfig {
                 .build();
     }
 
+    @Bean
+    NewTopic createOrdersCommandsTopic() {
+        return TopicBuilder.name(environment.getProperty("orders.commands.topic.name"))
+                .partitions(TOPIC_PARTITIONS)
+                .replicas(TOPIC_REPLICATION_FACTOR)
+                .build();
+    }
+
 }

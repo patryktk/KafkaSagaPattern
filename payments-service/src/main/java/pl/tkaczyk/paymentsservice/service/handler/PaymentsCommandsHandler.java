@@ -8,7 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import pl.tkaczyk.core.commands.ProcessedPaymentCommand;
+import pl.tkaczyk.core.dto.commands.ProcessedPaymentCommand;
 import pl.tkaczyk.core.dto.Payment;
 import pl.tkaczyk.core.dto.events.PaymentFailedEvent;
 import pl.tkaczyk.core.dto.events.PaymentProcessedEvent;

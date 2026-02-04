@@ -5,11 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import pl.tkaczyk.core.dto.Order;
+import pl.tkaczyk.core.dto.events.OrderApprovedEvent;
 import pl.tkaczyk.core.dto.events.OrderCreatedEvent;
 import pl.tkaczyk.core.types.OrderStatus;
 import pl.tkaczyk.ordersservice.jpa.entity.OrderEntity;
 import pl.tkaczyk.ordersservice.jpa.repository.OrderRepository;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,4 +48,13 @@ public class OrderServiceImpl implements OrderService {
                 entity.getStatus());
     }
 
+    @Override
+    public void approveOrder(UUID orderId) {
+        OrderEntity orderEntity = orderRepository.findById(orderId).orElse(null);
+        Assert.notNull(orderEntity, "Order not found with id " + orderId);
+        orderEntity.setStatus(OrderStatus.APPROVED);
+        orderRepository.save(orderEntity);
+        OrderApprovedEvent orderApprovedEvent = new OrderApprovedEvent(orderId);
+        kafkaTemplate.send(environment.getProperty("orders.events.topic.name"), orderApprovedEvent);
+    }
 }

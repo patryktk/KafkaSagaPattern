@@ -8,7 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import pl.tkaczyk.core.commands.ReserveProductCommand;
+import pl.tkaczyk.core.dto.commands.ReserveProductCommand;
 import pl.tkaczyk.core.dto.Product;
 import pl.tkaczyk.core.dto.events.ProductReservationFailedEvent;
 import pl.tkaczyk.core.dto.events.ProductReservedEvent;
